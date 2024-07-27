@@ -29,9 +29,12 @@ const quizData = [
 let currentQuestion = 0;
 let score = 0;
 let startTime;
+let userAnswers = [];
 
 const questionEl = document.getElementById("question");
 const choicesEl = document.getElementById("choices");
+const prevBtn = document.getElementById("prev");
+const nextBtn = document.getElementById("next");
 const submitBtn = document.getElementById("submit");
 const quizEl = document.getElementById("quiz");
 const resultsEl = document.getElementById("results");
@@ -40,6 +43,7 @@ const progressBarEl = document.getElementById("progress");
 const questionCountEl = document.getElementById("question-count");
 const timeTakenEl = document.getElementById("time-taken");
 const restartBtn = document.getElementById("restart");
+const reviewEl = document.getElementById("review");
 
 function loadQuestion() {
     const question = quizData[currentQuestion];
@@ -51,51 +55,60 @@ function loadQuestion() {
         const button = document.createElement("button");
         button.textContent = choice;
         button.addEventListener("click", () => selectChoice(i));
+        if (userAnswers[currentQuestion] === i) {
+            button.classList.add("selected");
+        }
         choicesEl.appendChild(button);
     }
 
     updateProgress();
+    updateNavigation();
 }
 
 function selectChoice(choiceIndex) {
+    userAnswers[currentQuestion] = choiceIndex;
     const buttons = choicesEl.getElementsByTagName("button");
     for (let i = 0; i < buttons.length; i++) {
         buttons[i].classList.remove("selected");
     }
     buttons[choiceIndex].classList.add("selected");
-}
-
-function submitAnswer() {
-    const selectedButton = choicesEl.querySelector(".selected");
-    if (!selectedButton) return;
-
-    const selectedAnswer = Array.from(choicesEl.children).indexOf(selectedButton);
-    const correctAnswer = quizData[currentQuestion].correctAnswer;
-
-    if (selectedAnswer === correctAnswer) {
-        score++;
-        selectedButton.classList.add("correct");
-    } else {
-        selectedButton.classList.add("incorrect");
-        choicesEl.children[correctAnswer].classList.add("correct");
-    }
-
-    submitBtn.disabled = true;
-    setTimeout(() => {
-        currentQuestion++;
-        if (currentQuestion < quizData.length) {
-            loadQuestion();
-            submitBtn.disabled = false;
-        } else {
-            showResults();
-        }
-    }, 1500);
+    updateNavigation();
 }
 
 function updateProgress() {
     const progress = ((currentQuestion + 1) / quizData.length) * 100;
     progressBarEl.style.width = `${progress}%`;
     questionCountEl.textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+}
+
+function updateNavigation() {
+    prevBtn.disabled = currentQuestion === 0;
+    nextBtn.style.display = currentQuestion === quizData.length - 1 ? "none" : "inline-block";
+    submitBtn.style.display = currentQuestion === quizData.length - 1 ? "inline-block" : "none";
+}
+
+function goToPrevious() {
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion();
+    }
+}
+
+function goToNext() {
+    if (currentQuestion < quizData.length - 1) {
+        currentQuestion++;
+        loadQuestion();
+    }
+}
+
+function submitQuiz() {
+    score = 0;
+    for (let i = 0; i < quizData.length; i++) {
+        if (userAnswers[i] === quizData[i].correctAnswer) {
+            score++;
+        }
+    }
+    showResults();
 }
 
 function showResults() {
@@ -108,18 +121,39 @@ function showResults() {
     const minutes = Math.floor(timeTaken / 60);
     const seconds = timeTaken % 60;
     timeTakenEl.textContent = `${minutes} minutes and ${seconds} seconds`;
+
+    reviewEl.innerHTML = "";
+    for (let i = 0; i < quizData.length; i++) {
+        const question = quizData[i];
+        const userAnswer = userAnswers[i];
+        const isCorrect = userAnswer === question.correctAnswer;
+        
+        const reviewItem = document.createElement("div");
+        reviewItem.innerHTML = `
+            <p><strong>Question ${i + 1}:</strong> ${question.question}</p>
+            <p>Your answer: ${question.choices[userAnswer]}</p>
+            <p>Correct answer: ${question.choices[question.correctAnswer]}</p>
+            <p style="color: ${isCorrect ? 'green' : 'red'}">
+                ${isCorrect ? 'Correct' : 'Incorrect'}
+            </p>
+        `;
+        reviewEl.appendChild(reviewItem);
+    }
 }
 
 function restartQuiz() {
     currentQuestion = 0;
     score = 0;
+    userAnswers = [];
     startTime = new Date();
     quizEl.style.display = "block";
     resultsEl.style.display = "none";
     loadQuestion();
 }
 
-submitBtn.addEventListener("click", submitAnswer);
+prevBtn.addEventListener("click", goToPrevious);
+nextBtn.addEventListener("click", goToNext);
+submitBtn.addEventListener("click", submitQuiz);
 restartBtn.addEventListener("click", restartQuiz);
 
 startTime = new Date();

@@ -3,85 +3,116 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f0f0f0;
+    color: #333;
 }
 
 .container {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
     text-align: center;
-    color: #333;
+    color: #2c3e50;
+    margin-bottom: 30px;
 }
 
 #progress-bar {
     width: 100%;
-    height: 20px;
-    background-color: #e0e0e0;
-    border-radius: 10px;
-    margin-bottom: 10px;
+    height: 10px;
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
 }
 
 #progress {
     width: 0;
     height: 100%;
-    background-color: #4CAF50;
-    border-radius: 10px;
+    background-color: #3498db;
     transition: width 0.3s ease-in-out;
 }
 
 #question-count {
     text-align: right;
-    color: #666;
-    margin-bottom: 10px;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+    font-size: 0.9em;
 }
 
 #question {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    font-size: 1.2em;
+    color: #2c3e50;
 }
 
 #choices {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #4CAF50;
+    display: inline-block;
+    width: calc(50% - 10px);
+    padding: 12px;
+    margin: 5px;
+    background-color: #3498db;
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    font-size: 1em;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .selected {
-    background-color: #45a049;
+    background-color: #2980b9;
 }
 
 .correct {
-    background-color: #4CAF50;
+    background-color: #2ecc71;
 }
 
 .incorrect {
-    background-color: #f44336;
+    background-color: #e74c3c;
+}
+
+#navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
 }
 
 #results {
     text-align: center;
 }
 
+#review {
+    margin-top: 20px;
+    text-align: left;
+}
+
 #restart {
     margin-top: 20px;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    button {
+        width: 100%;
+    }
 }

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz App - Version 3</title>
+    <title>Quiz App - Version 4</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Advanced Quiz App</h1>
+        <h1>Professional Quiz App</h1>
         <div id="quiz">
             <div id="progress-bar">
                 <div id="progress"></div>
@@ -16,12 +16,17 @@
             <p id="question-count"></p>
             <h2 id="question"></h2>
             <div id="choices"></div>
-            <button id="submit">Submit</button>
+            <div id="navigation">
+                <button id="prev" disabled>Previous</button>
+                <button id="next">Next</button>
+                <button id="submit" style="display: none;">Submit Quiz</button>
+            </div>
         </div>
         <div id="results" style="display: none;">
             <h2>Quiz Completed!</h2>
             <p>Your score: <span id="score"></span></p>
             <p>Time taken: <span id="time-taken"></span></p>
+            <div id="review"></div>
             <button id="restart">Restart Quiz</button>
         </div>
     </div>
