@@ -9,13 +9,13 @@ const quizData = [
         question: "Which planet is known as the Red Planet?",
         choices: ["Venus", "Mars", "Jupiter", "Saturn"],
         correctAnswer: 1,
-        explanation: "Mars is often called the Red Planet due to its reddish appearance in the night sky."
+        explanation: "Mars is often called the Red Planet due to its reddish appearance."
     },
     {
         question: "What is 2 + 2?",
         choices: ["3", "4", "5", "6"],
         correctAnswer: 1,
-        explanation: "The sum of 2 and 2 is 4, which is a basic mathematical fact."
+        explanation: "The sum of 2 and 2 is 4, a basic mathematical fact."
     },
     {
         question: "Who painted the Mona Lisa?",
@@ -30,34 +30,22 @@ const quizData = [
         explanation: "The Pacific Ocean is the largest and deepest of Earth's oceanic divisions."
     },
     {
-        question: "Which element has the chemical symbol 'O'?",
-        choices: ["Gold", "Silver", "Oxygen", "Iron"],
+        question: "Which programming language is known for its use in web development?",
+        choices: ["Java", "Python", "JavaScript", "C++"],
         correctAnswer: 2,
-        explanation: "The chemical symbol 'O' represents Oxygen, a vital element for life on Earth."
+        explanation: "JavaScript is widely used for client-side scripting in web development."
     },
     {
-        question: "In what year did World War II end?",
-        choices: ["1943", "1944", "1945", "1946"],
-        correctAnswer: 2,
-        explanation: "World War II ended in 1945 with the surrender of Germany in May and Japan in August."
+        question: "What does HTML stand for?",
+        choices: ["Hyper Text Markup Language", "High-Level Text Management Language", "Hyperlink and Text Markup Language", "Home Tool Markup Language"],
+        correctAnswer: 0,
+        explanation: "HTML stands for Hyper Text Markup Language, used for creating web pages."
     },
     {
-        question: "What is the capital of Japan?",
-        choices: ["Seoul", "Beijing", "Tokyo", "Bangkok"],
-        correctAnswer: 2,
-        explanation: "Tokyo is the capital and most populous prefecture of Japan."
-    },
-    {
-        question: "Who wrote 'Romeo and Juliet'?",
-        choices: ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+        question: "What is the time complexity of binary search?",
+        choices: ["O(n)", "O(log n)", "O(n^2)", "O(1)"],
         correctAnswer: 1,
-        explanation: "Romeo and Juliet was written by William Shakespeare, one of the most famous English playwrights."
-    },
-    {
-        question: "What is the currency of Brazil?",
-        choices: ["Peso", "Dollar", "Euro", "Real"],
-        correctAnswer: 3,
-        explanation: "The Real is the official currency of Brazil, introduced in 1994."
+        explanation: "Binary search has a time complexity of O(log n), where n is the number of elements."
     }
 ];
 
@@ -141,7 +129,6 @@ function loadQuestion() {
     updateProgress();
     updateNavigation();
 
-    // Add fade-in animation
     questionEl.classList.add("fade-in");
     choicesEl.classList.add("fade-in");
     setTimeout(() => {
@@ -159,7 +146,7 @@ function startTimer() {
         timerEl.textContent = timeLeft;
         if (timeLeft === 0) {
             clearInterval(timer);
-            selectChoice(-1); // -1 indicates no answer selected
+            selectChoice(-1);
             showExplanation();
         }
     }, 1000);
@@ -240,22 +227,21 @@ function showResults() {
     for (let i = 0; i < currentQuestions.length; i++) {
         const question = currentQuestions[i];
         const userAnswer = userAnswers[i];
-        const isCorrect = userAnswer === question.correctAnswer;
+      const isCorrect = userAnswer === question.correctAnswer;
         
         const reviewItem = document.createElement("div");
+        reviewItem.className = "review-item";
         reviewItem.innerHTML = `
-            <p><strong>Question ${i + 1}:</strong> ${question.question}</p>
+            <h3>Question ${i + 1}</h3>
+            <p>${question.question}</p>
             <p>Your answer: ${userAnswer === -1 ? "No answer" : question.choices[userAnswer]}</p>
             <p>Correct answer: ${question.choices[question.correctAnswer]}</p>
-            <p style="color: ${isCorrect ? 'green' : 'red'}">
-                ${isCorrect ? 'Correct' : 'Incorrect'}
-            </p>
-            <p><strong>Explanation:</strong> ${question.explanation}</p>
+            <p class="${isCorrect ? 'correct' : 'incorrect'}">${isCorrect ? 'Correct' : 'Incorrect'}</p>
         `;
         reviewEl.appendChild(reviewItem);
     }
 
-    // Trigger confetti effect
+    // Trigger confetti effect for perfect score
     if (score === currentQuestions.length) {
         confetti({
             particleCount: 100,

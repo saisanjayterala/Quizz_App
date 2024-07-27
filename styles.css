@@ -120,6 +120,17 @@ button:disabled {
     text-align: left;
 }
 
+#review .review-item {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+#review .review-item h3 {
+    margin-top: 0;
+}
+
 #confetti {
     position: fixed;
     top: 0;
