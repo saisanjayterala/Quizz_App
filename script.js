@@ -23,9 +23,35 @@ const quizData = [
         question: "What is the largest ocean on Earth?",
         choices: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
         correctAnswer: 3
+    },
+    {
+        question: "Which element has the chemical symbol 'O'?",
+        choices: ["Gold", "Silver", "Oxygen", "Iron"],
+        correctAnswer: 2
+    },
+    {
+        question: "In what year did World War II end?",
+        choices: ["1943", "1944", "1945", "1946"],
+        correctAnswer: 2
+    },
+    {
+        question: "What is the capital of Japan?",
+        choices: ["Seoul", "Beijing", "Tokyo", "Bangkok"],
+        correctAnswer: 2
+    },
+    {
+        question: "Who wrote 'Romeo and Juliet'?",
+        choices: ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+        correctAnswer: 1
+    },
+    {
+        question: "What is the currency of Brazil?",
+        choices: ["Peso", "Dollar", "Euro", "Real"],
+        correctAnswer: 3
     }
 ];
 
+let currentQuestions = [];
 let currentQuestion = 0;
 let score = 0;
 let startTime;
@@ -45,8 +71,26 @@ const timeTakenEl = document.getElementById("time-taken");
 const restartBtn = document.getElementById("restart");
 const reviewEl = document.getElementById("review");
 
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function initQuiz() {
+    currentQuestions = [...quizData];
+    shuffleArray(currentQuestions);
+    currentQuestions = currentQuestions.slice(0, 5); // Select 5 random questions
+    currentQuestion = 0;
+    score = 0;
+    userAnswers = [];
+    startTime = new Date();
+    loadQuestion();
+}
+
 function loadQuestion() {
-    const question = quizData[currentQuestion];
+    const question = currentQuestions[currentQuestion];
     questionEl.textContent = question.question;
 
     choicesEl.innerHTML = "";
@@ -63,6 +107,14 @@ function loadQuestion() {
 
     updateProgress();
     updateNavigation();
+
+    // Add fade-in animation
+    questionEl.classList.add("fade-in");
+    choicesEl.classList.add("fade-in");
+    setTimeout(() => {
+        questionEl.classList.remove("fade-in");
+        choicesEl.classList.remove("fade-in");
+    }, 500);
 }
 
 function selectChoice(choiceIndex) {
@@ -76,15 +128,15 @@ function selectChoice(choiceIndex) {
 }
 
 function updateProgress() {
-    const progress = ((currentQuestion + 1) / quizData.length) * 100;
+    const progress = ((currentQuestion + 1) / currentQuestions.length) * 100;
     progressBarEl.style.width = `${progress}%`;
-    questionCountEl.textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+    questionCountEl.textContent = `Question ${currentQuestion + 1} of ${currentQuestions.length}`;
 }
 
 function updateNavigation() {
     prevBtn.disabled = currentQuestion === 0;
-    nextBtn.style.display = currentQuestion === quizData.length - 1 ? "none" : "inline-block";
-    submitBtn.style.display = currentQuestion === quizData.length - 1 ? "inline-block" : "none";
+    nextBtn.style.display = currentQuestion === currentQuestions.length - 1 ? "none" : "inline-block";
+    submitBtn.style.display = currentQuestion === currentQuestions.length - 1 ? "inline-block" : "none";
 }
 
 function goToPrevious() {
@@ -95,7 +147,7 @@ function goToPrevious() {
 }
 
 function goToNext() {
-    if (currentQuestion < quizData.length - 1) {
+    if (currentQuestion < currentQuestions.length - 1) {
         currentQuestion++;
         loadQuestion();
     }
@@ -103,8 +155,8 @@ function goToNext() {
 
 function submitQuiz() {
     score = 0;
-    for (let i = 0; i < quizData.length; i++) {
-        if (userAnswers[i] === quizData[i].correctAnswer) {
+    for (let i = 0; i < currentQuestions.length; i++) {
+        if (userAnswers[i] === currentQuestions[i].correctAnswer) {
             score++;
         }
     }
@@ -114,7 +166,7 @@ function submitQuiz() {
 function showResults() {
     quizEl.style.display = "none";
     resultsEl.style.display = "block";
-    scoreEl.textContent = `${score} out of ${quizData.length}`;
+    scoreEl.textContent = `${score} out of ${currentQuestions.length}`;
     
     const endTime = new Date();
     const timeTaken = Math.floor((endTime - startTime) / 1000);
@@ -123,8 +175,8 @@ function showResults() {
     timeTakenEl.textContent = `${minutes} minutes and ${seconds} seconds`;
 
     reviewEl.innerHTML = "";
-    for (let i = 0; i < quizData.length; i++) {
-        const question = quizData[i];
+    for (let i = 0; i < currentQuestions.length; i++) {
+        const question = currentQuestions[i];
         const userAnswer = userAnswers[i];
         const isCorrect = userAnswer === question.correctAnswer;
         
@@ -139,16 +191,21 @@ function showResults() {
         `;
         reviewEl.appendChild(reviewItem);
     }
+
+    // Trigger confetti effect
+    if (score === currentQuestions.length) {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }
 }
 
 function restartQuiz() {
-    currentQuestion = 0;
-    score = 0;
-    userAnswers = [];
-    startTime = new Date();
-    quizEl.style.display = "block";
     resultsEl.style.display = "none";
-    loadQuestion();
+    quizEl.style.display = "block";
+    initQuiz();
 }
 
 prevBtn.addEventListener("click", goToPrevious);
@@ -156,5 +213,4 @@ nextBtn.addEventListener("click", goToNext);
 submitBtn.addEventListener("click", submitQuiz);
 restartBtn.addEventListener("click", restartQuiz);
 
-startTime = new Date();
-loadQuestion();
+initQuiz();
