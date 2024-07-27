@@ -72,7 +72,6 @@ const restartBtn = document.getElementById("restart");
 const reviewEl = document.getElementById("review");
 const timerEl = document.getElementById("timer");
 const explanationEl = document.getElementById("explanation");
-const loaderEl = document.getElementById("loader");
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -81,29 +80,17 @@ function shuffleArray(array) {
     }
 }
 
-function showLoader() {
-    loaderEl.style.display = "flex";
-}
-
-function hideLoader() {
-    loaderEl.style.display = "none";
-}
-
 function initQuiz() {
-    showLoader();
-    setTimeout(() => {
-        welcomeScreenEl.style.display = "none";
-        quizEl.style.display = "block";
-        currentQuestions = [...quizData];
-        shuffleArray(currentQuestions);
-        currentQuestions = currentQuestions.slice(0, 5); // Select 5 random questions
-        currentQuestion = 0;
-        score = 0;
-        userAnswers = [];
-        startTime = new Date();
-        loadQuestion();
-        hideLoader();
-    }, 1000);
+    welcomeScreenEl.style.display = "none";
+    quizEl.style.display = "block";
+    currentQuestions = [...quizData];
+    shuffleArray(currentQuestions);
+    currentQuestions = currentQuestions.slice(0, 5); // Select 5 random questions
+    currentQuestion = 0;
+    score = 0;
+    userAnswers = [];
+    startTime = new Date();
+    loadQuestion();
 }
 
 function loadQuestion() {
@@ -146,7 +133,11 @@ function startTimer() {
         timerEl.textContent = timeLeft;
         if (timeLeft === 0) {
             clearInterval(timer);
+<<<<<<< HEAD
             selectChoice(-1);
+=======
+            selectChoice(-1); 
+>>>>>>> parent of c767a8e (Enhance quiz UI and add interactive features)
             showExplanation();
         }
     }, 1000);
@@ -181,10 +172,12 @@ function showExplanation() {
     `;
     explanationEl.style.display = "block";
 
-    const buttons = choicesEl.getElementsByTagName("button");
-    buttons[question.correctAnswer].classList.add("correct");
-    if (!isCorrect && userAnswer !== -1) {
-        buttons[userAnswer].classList.add("incorrect");
+    if (userAnswer !== -1) {
+        const buttons = choicesEl.getElementsByTagName("button");
+        buttons[question.correctAnswer].classList.add("correct");
+        if (!isCorrect && userAnswer !== -1) {
+            buttons[userAnswer].classList.add("incorrect");
+        }
     }
 
     nextBtn.disabled = false;
@@ -241,7 +234,10 @@ function showResults() {
         reviewEl.appendChild(reviewItem);
     }
 
+<<<<<<< HEAD
     // Trigger confetti effect for perfect score
+=======
+>>>>>>> parent of c767a8e (Enhance quiz UI and add interactive features)
     if (score === currentQuestions.length) {
         confetti({
             particleCount: 100,
@@ -264,4 +260,40 @@ restartBtn.addEventListener("click", restartQuiz);
 // Initial setup
 welcomeScreenEl.style.display = "block";
 quizEl.style.display = "none";
+<<<<<<< HEAD
 resultsEl.style.display = "none";
+=======
+resultsEl.style.display = "none";
+
+// Add some cool background effects
+function createStars() {
+    const count = 100;
+    const scene = document.querySelector('body');
+    let i = 0;
+    while (i < count) {
+        const star = document.createElement('i');
+        const x = Math.floor(Math.random() * window.innerWidth);
+        const y = Math.floor(Math.random() * window.innerHeight);
+        const size = Math.random() * 2;
+        const duration = Math.random() * 10;
+
+        star.style.left = x + 'px';
+        star.style.top = y + 'px';
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.animationDuration = 5 + duration + 's';
+        star.style.animationDelay = duration + 's';
+
+        scene.appendChild(star);
+        i++;
+    }
+}
+
+createStars();
+
+window.addEventListener('resize', () => {
+    const stars = document.querySelectorAll('body > i');
+    stars.forEach(star => star.remove());
+    createStars();
+});
+>>>>>>> parent of c767a8e (Enhance quiz UI and add interactive features)
