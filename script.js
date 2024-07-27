@@ -2,52 +2,62 @@ const quizData = [
     {
         question: "What is the capital of France?",
         choices: ["London", "Berlin", "Paris", "Madrid"],
-        correctAnswer: 2
+        correctAnswer: 2,
+        explanation: "Paris is the capital and most populous city of France."
     },
     {
         question: "Which planet is known as the Red Planet?",
         choices: ["Venus", "Mars", "Jupiter", "Saturn"],
-        correctAnswer: 1
+        correctAnswer: 1,
+        explanation: "Mars is often called the Red Planet due to its reddish appearance in the night sky."
     },
     {
         question: "What is 2 + 2?",
         choices: ["3", "4", "5", "6"],
-        correctAnswer: 1
+        correctAnswer: 1,
+        explanation: "The sum of 2 and 2 is 4, which is a basic mathematical fact."
     },
     {
         question: "Who painted the Mona Lisa?",
         choices: ["Vincent van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Michelangelo"],
-        correctAnswer: 1
+        correctAnswer: 1,
+        explanation: "The Mona Lisa was painted by Italian Renaissance artist Leonardo da Vinci."
     },
     {
         question: "What is the largest ocean on Earth?",
         choices: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
-        correctAnswer: 3
+        correctAnswer: 3,
+        explanation: "The Pacific Ocean is the largest and deepest of Earth's oceanic divisions."
     },
     {
         question: "Which element has the chemical symbol 'O'?",
         choices: ["Gold", "Silver", "Oxygen", "Iron"],
-        correctAnswer: 2
+        correctAnswer: 2,
+        explanation: "The chemical symbol 'O' represents Oxygen, a vital element for life on Earth."
     },
     {
         question: "In what year did World War II end?",
         choices: ["1943", "1944", "1945", "1946"],
-        correctAnswer: 2
+        correctAnswer: 2,
+        explanation: "World War II ended in 1945 with the surrender of Germany in May and Japan in August."
     },
     {
         question: "What is the capital of Japan?",
         choices: ["Seoul", "Beijing", "Tokyo", "Bangkok"],
-        correctAnswer: 2
+        correctAnswer: 2,
+        explanation: "Tokyo is the capital and most populous prefecture of Japan."
     },
     {
         question: "Who wrote 'Romeo and Juliet'?",
         choices: ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
-        correctAnswer: 1
+        correctAnswer: 1,
+        explanation: "Romeo and Juliet was written by William Shakespeare, one of the most famous English playwrights."
     },
     {
         question: "What is the currency of Brazil?",
         choices: ["Peso", "Dollar", "Euro", "Real"],
-        correctAnswer: 3
+        correctAnswer: 3,
+        explanation: "The Real is the official currency of Brazil, introduced in 1994."
     }
 ];
 
@@ -56,10 +66,12 @@ let currentQuestion = 0;
 let score = 0;
 let startTime;
 let userAnswers = [];
+let timer;
 
+const welcomeScreenEl = document.getElementById("welcome-screen");
+const startQuizBtn = document.getElementById("start-quiz");
 const questionEl = document.getElementById("question");
 const choicesEl = document.getElementById("choices");
-const prevBtn = document.getElementById("prev");
 const nextBtn = document.getElementById("next");
 const submitBtn = document.getElementById("submit");
 const quizEl = document.getElementById("quiz");
@@ -70,6 +82,8 @@ const questionCountEl = document.getElementById("question-count");
 const timeTakenEl = document.getElementById("time-taken");
 const restartBtn = document.getElementById("restart");
 const reviewEl = document.getElementById("review");
+const timerEl = document.getElementById("timer");
+const explanationEl = document.getElementById("explanation");
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -79,6 +93,8 @@ function shuffleArray(array) {
 }
 
 function initQuiz() {
+    welcomeScreenEl.style.display = "none";
+    quizEl.style.display = "block";
     currentQuestions = [...quizData];
     shuffleArray(currentQuestions);
     currentQuestions = currentQuestions.slice(0, 5); // Select 5 random questions
@@ -90,6 +106,10 @@ function initQuiz() {
 }
 
 function loadQuestion() {
+    clearInterval(timer);
+    timerEl.textContent = "15";
+    startTimer();
+
     const question = currentQuestions[currentQuestion];
     questionEl.textContent = question.question;
 
@@ -115,16 +135,61 @@ function loadQuestion() {
         questionEl.classList.remove("fade-in");
         choicesEl.classList.remove("fade-in");
     }, 500);
+
+    explanationEl.style.display = "none";
+}
+
+function startTimer() {
+    let timeLeft = 15;
+    timer = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+        if (timeLeft === 0) {
+            clearInterval(timer);
+            selectChoice(-1); 
+            showExplanation();
+        }
+    }, 1000);
 }
 
 function selectChoice(choiceIndex) {
+    clearInterval(timer);
     userAnswers[currentQuestion] = choiceIndex;
     const buttons = choicesEl.getElementsByTagName("button");
     for (let i = 0; i < buttons.length; i++) {
         buttons[i].classList.remove("selected");
+        buttons[i].disabled = true;
     }
-    buttons[choiceIndex].classList.add("selected");
-    updateNavigation();
+    if (choiceIndex !== -1) {
+        buttons[choiceIndex].classList.add("selected");
+    }
+    showExplanation();
+}
+
+function showExplanation() {
+    const question = currentQuestions[currentQuestion];
+    const userAnswer = userAnswers[currentQuestion];
+    const isCorrect = userAnswer === question.correctAnswer;
+
+    if (isCorrect) {
+        score++;
+    }
+
+    explanationEl.innerHTML = `
+        <p><strong>${isCorrect ? "Correct!" : "Incorrect!"}</strong></p>
+        <p>${question.explanation}</p>
+    `;
+    explanationEl.style.display = "block";
+
+    if (userAnswer !== -1) {
+        const buttons = choicesEl.getElementsByTagName("button");
+        buttons[question.correctAnswer].classList.add("correct");
+        if (!isCorrect && userAnswer !== -1) {
+            buttons[userAnswer].classList.add("incorrect");
+        }
+    }
+
+    nextBtn.disabled = false;
 }
 
 function updateProgress() {
@@ -134,36 +199,22 @@ function updateProgress() {
 }
 
 function updateNavigation() {
-    prevBtn.disabled = currentQuestion === 0;
+    nextBtn.disabled = true;
     nextBtn.style.display = currentQuestion === currentQuestions.length - 1 ? "none" : "inline-block";
     submitBtn.style.display = currentQuestion === currentQuestions.length - 1 ? "inline-block" : "none";
 }
 
-function goToPrevious() {
-    if (currentQuestion > 0) {
-        currentQuestion--;
-        loadQuestion();
-    }
-}
-
 function goToNext() {
-    if (currentQuestion < currentQuestions.length - 1) {
-        currentQuestion++;
+    currentQuestion++;
+    if (currentQuestion < currentQuestions.length) {
         loadQuestion();
+    } else {
+        showResults();
     }
-}
-
-function submitQuiz() {
-    score = 0;
-    for (let i = 0; i < currentQuestions.length; i++) {
-        if (userAnswers[i] === currentQuestions[i].correctAnswer) {
-            score++;
-        }
-    }
-    showResults();
 }
 
 function showResults() {
+    clearInterval(timer);
     quizEl.style.display = "none";
     resultsEl.style.display = "block";
     scoreEl.textContent = `${score} out of ${currentQuestions.length}`;
@@ -183,16 +234,16 @@ function showResults() {
         const reviewItem = document.createElement("div");
         reviewItem.innerHTML = `
             <p><strong>Question ${i + 1}:</strong> ${question.question}</p>
-            <p>Your answer: ${question.choices[userAnswer]}</p>
+            <p>Your answer: ${userAnswer === -1 ? "No answer" : question.choices[userAnswer]}</p>
             <p>Correct answer: ${question.choices[question.correctAnswer]}</p>
             <p style="color: ${isCorrect ? 'green' : 'red'}">
                 ${isCorrect ? 'Correct' : 'Incorrect'}
             </p>
+            <p><strong>Explanation:</strong> ${question.explanation}</p>
         `;
         reviewEl.appendChild(reviewItem);
     }
 
-    // Trigger confetti effect
     if (score === currentQuestions.length) {
         confetti({
             particleCount: 100,
@@ -204,13 +255,47 @@ function showResults() {
 
 function restartQuiz() {
     resultsEl.style.display = "none";
-    quizEl.style.display = "block";
-    initQuiz();
+    welcomeScreenEl.style.display = "block";
 }
 
-prevBtn.addEventListener("click", goToPrevious);
+startQuizBtn.addEventListener("click", initQuiz);
 nextBtn.addEventListener("click", goToNext);
-submitBtn.addEventListener("click", submitQuiz);
+submitBtn.addEventListener("click", showResults);
 restartBtn.addEventListener("click", restartQuiz);
 
-initQuiz();
+// Initial setup
+welcomeScreenEl.style.display = "block";
+quizEl.style.display = "none";
+resultsEl.style.display = "none";
+
+// Add some cool background effects
+function createStars() {
+    const count = 100;
+    const scene = document.querySelector('body');
+    let i = 0;
+    while (i < count) {
+        const star = document.createElement('i');
+        const x = Math.floor(Math.random() * window.innerWidth);
+        const y = Math.floor(Math.random() * window.innerHeight);
+        const size = Math.random() * 2;
+        const duration = Math.random() * 10;
+
+        star.style.left = x + 'px';
+        star.style.top = y + 'px';
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.animationDuration = 5 + duration + 's';
+        star.style.animationDelay = duration + 's';
+
+        scene.appendChild(star);
+        i++;
+    }
+}
+
+createStars();
+
+window.addEventListener('resize', () => {
+    const stars = document.querySelectorAll('body > i');
+    stars.forEach(star => star.remove());
+    createStars();
+});
